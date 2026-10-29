@@ -3,10 +3,12 @@ package com.miguelmendezz.the_pass.entity;
 import com.miguelmendezz.the_pass.entity.enums.PaymentMethod;
 import com.miguelmendezz.the_pass.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,28 +17,31 @@ public class Payment {
     @Id
     @GeneratedValue
     private UUID id;
-    @NotBlank
+    @NotNull
+    @Positive
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
     @NotNull
+    @Column(nullable = false, length = 3)
     private String currencyCode;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentMethod paymentMethod;
+    private PaymentMethod method;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentStatus paymentStatus;
-    private LocalDateTime timestamp;
+    private PaymentStatus status;
+    @Column(nullable = false)
+    private Instant createdAt;
 
     public Payment() {
     }
 
-    public Payment(BigDecimal amount, String currencyCode, PaymentMethod paymentMethod,
-                   PaymentStatus paymentStatus) {
+    public Payment(BigDecimal amount, String currencyCode, PaymentMethod method) {
         this.amount = amount;
         this.currencyCode = currencyCode;
-        this.paymentMethod = paymentMethod;
-        this.paymentStatus = paymentStatus;
-        this.timestamp = LocalDateTime.now();
+        this.method = method;
+        this.status = PaymentStatus.PENDING;
+        this.createdAt = Instant.now();
     }
 
     public UUID getId() {
@@ -47,35 +52,19 @@ public class Payment {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
     public String getCurrencyCode() {
         return currencyCode;
     }
 
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
+    public PaymentMethod getMethod() {
+        return method;
     }
 
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
+    public PaymentStatus getStatus() {
+        return status;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public PaymentStatus getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 }
